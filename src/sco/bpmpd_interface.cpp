@@ -155,6 +155,7 @@ extern vector<int> vars2inds(const vector<Var>& vars);
 extern vector<int> cnts2inds(const vector<Cnt>& cnts);
 
 ModelPtr createBPMPDModel() {
+  printf("creating new BPMPDModel\n");
   ModelPtr out(new BPMPDModel());
   return out;
 }
@@ -165,6 +166,7 @@ ModelPtr createBPMPDModel() {
 
 pid_t popen2(const char *command, int *infp, int *outfp)
 {
+    printf("In popen2\n");
     int p_stdin[2], p_stdout[2];
     pid_t pid;
 
@@ -202,24 +204,34 @@ pid_t popen2(const char *command, int *infp, int *outfp)
     return pid;
 }
 
-pid_t gPID=0;
-int gPipeIn=0, gPipeOut=0;
-
+//pid_t gPID=0;
+//int gPipeIn=0, gPipeOut=0;
+/*
 void fexit() {
   char text[1] = {EXIT_CHAR};
   int n = write(gPipeIn, text, 1);
   ALWAYS_ASSERT(n==1);
   
 }
+*/
 
-BPMPDModel::BPMPDModel() : m_pipeIn(0), m_pipeOut(0) {  
+BPMPDModel::BPMPDModel() : m_pipeIn(0), m_pipeOut(0), m_pid(0){
+  printf("m_PID = %d\n",m_pid);
+  /*
   if (gPID == 0) {
     atexit(fexit);
     gPID = popen2(BPMPD_CALLER, &gPipeIn, &gPipeOut);
   }
+  */
+  //atexit(fexit());
+  m_pid = popen2(BPMPD_CALLER, &m_pipeIn, &m_pipeOut);
+
 }
 
 BPMPDModel::~BPMPDModel() {
+    char text[1] = {EXIT_CHAR};
+    int n = write(m_pipeIn, text, 1);
+    ALWAYS_ASSERT(n==1);
   // char text[1] = {123};
   // write(gPipeIn, text, 1);
   // // kill(m_pid, SIGKILL); // TODO: WHY DOES THIS KILL THE PARENT PROCESS?!
@@ -451,13 +463,13 @@ CvxOptStatus BPMPDModel::optimize() {
 #else
     
   bpmpd_input bi(m,n,nz, qn, qnz, acolcnt, acolidx, acolnzs, qcolcnt, qcolidx, qcolnzs, rhs, obj, lbound, ubound);
-  ser(gPipeIn, bi, SER);    
+  ser(m_pipeIn, bi, SER);
 
   // std::cout << "serialization time:" << end-start << std::endl;
 
 
    bpmpd_output bo;
-   ser(gPipeOut, bo, DESER);
+   ser(m_pipeOut, bo, DESER);
    
    m_soln = vector<double>(bo.primal.begin(), bo.primal.begin()+n);
    int retcode = bo.code;

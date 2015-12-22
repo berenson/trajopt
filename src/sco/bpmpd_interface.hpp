@@ -16,7 +16,8 @@ public:
   
   QuadExpr m_objective;  
   
-  int m_pipeIn, m_pipeOut, m_pid;
+  int m_pipeIn, m_pipeOut;
+  pid_t m_pid;
   
   BPMPDModel();
   virtual ~BPMPDModel();

@@ -21,7 +21,8 @@ public:
   virtual double GetContactDistance() = 0;  
 
   ~VoxelCollisionChecker() {}
-  static boost::shared_ptr<CollisionChecker> GetOrCreate(OR::EnvironmentBase& env);
+  //static boost::shared_ptr<CollisionChecker> GetOrCreate(OR::EnvironmentBase& env);
+  boost::shared_ptr<CollisionChecker> GetOrCreate(OR::EnvironmentBase& env); //DDB: made this not static
 };
 
 }
