@@ -155,7 +155,6 @@ extern vector<int> vars2inds(const vector<Var>& vars);
 extern vector<int> cnts2inds(const vector<Cnt>& cnts);
 
 ModelPtr createBPMPDModel() {
-  printf("creating new BPMPDModel\n");
   ModelPtr out(new BPMPDModel());
   return out;
 }
@@ -166,7 +165,6 @@ ModelPtr createBPMPDModel() {
 
 pid_t popen2(const char *command, int *infp, int *outfp)
 {
-    printf("In popen2\n");
     int p_stdin[2], p_stdout[2];
     pid_t pid;
 
@@ -204,6 +202,7 @@ pid_t popen2(const char *command, int *infp, int *outfp)
     return pid;
 }
 
+//DDB: not using global pipe and PID variables, using member variables inside BPMPDModel
 //pid_t gPID=0;
 //int gPipeIn=0, gPipeOut=0;
 /*
@@ -216,7 +215,6 @@ void fexit() {
 */
 
 BPMPDModel::BPMPDModel() : m_pipeIn(0), m_pipeOut(0), m_pid(0){
-  printf("m_PID = %d\n",m_pid);
   /*
   if (gPID == 0) {
     atexit(fexit);
